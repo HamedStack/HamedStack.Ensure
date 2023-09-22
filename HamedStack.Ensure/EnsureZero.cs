@@ -12,36 +12,33 @@ namespace HamedStack.Ensure;
 public static partial class EnsureExtensions
 {
     /// <summary>
-    /// Ensures that the value is less than the specified maximum value.
+    /// Ensures that the value is equal to zero.
     /// </summary>
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <param name="value">The value to check.</param>
-    /// <param name="maxValue">The maximum allowed value.</param>
-    /// <param name="exceptionCreator">A delegate that creates an exception if the value is not less than the target value.</param>
+    /// <param name="exceptionCreator">A delegate that creates an exception if the value is not equal to zero.</param>
     /// <param name="paramName">The name of the parameter to include in the exception message.</param>
-    /// <returns>The original value if it is less than the specified maximum value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the value is greater than or equal to the specified maximum value.
+    /// <returns>The original value if it is equal to zero.</returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the value is not equal to zero.
     /// </exception>
-    public static T EnsureLessThan<T>(
+    public static T EnsureZero<T>(
         [NotNull] this T value,
-        [NotNull] T maxValue,
         Func<string, Exception>? exceptionCreator = null,
         [CallerArgumentExpression("value")] string? paramName = null) where T : IComparable<T>
     {
-        if (value.CompareTo(maxValue) < 0)
+        if (value.CompareTo(default) == 0)
         {
             return value;
         }
-
         var exception = exceptionCreator?.Invoke(paramName ?? nameof(value));
         if (exception != null)
         {
             throw exception;
         }
-
-        throw new ArgumentOutOfRangeException(
-            paramName ?? nameof(value),
-            $"Value must be less than {maxValue}.");
+        throw new ArgumentException(
+            "Value must be equal to zero.",
+            paramName ?? nameof(value)
+            );
     }
 }

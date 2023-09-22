@@ -1,6 +1,8 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
+using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
 
 namespace HamedStack.Ensure;
@@ -11,24 +13,23 @@ namespace HamedStack.Ensure;
 public static partial class EnsureExtensions
 {
     /// <summary>
-    /// Ensures that the value is not equal to the specified target value.
+    /// Ensures that the string matches the specified regular expression pattern.
     /// </summary>
-    /// <typeparam name="T">The type of the value to check.</typeparam>
-    /// <param name="value">The value to check.</param>
-    /// <param name="targetValue">The target value for comparison.</param>
+    /// <param name="value">The string to check.</param>
+    /// <param name="pattern">The regular expression pattern to match against.</param>
+    /// <param name="exceptionCreator">A delegate that creates an exception if the string does not match the pattern.</param>
     /// <param name="paramName">The name of the parameter to include in the exception message.</param>
-    /// <param name="exceptionCreator">A delegate that creates an exception if the value is not equal to the target value.</param>
-    /// <returns>The original value if it is not equal to the specified target value.</returns>
+    /// <returns>The original string if it matches the regular expression pattern.</returns>
     /// <exception cref="ArgumentException">
-    /// Thrown when the value is equal to the specified target value.
+    /// Thrown when the string does not match the specified pattern.
     /// </exception>
-    public static T EnsureNotEqual<T>(
-        this T value,
-        T targetValue,
+    public static string EnsureValidFormat(
+        [NotNull] this string? value,
+        [NotNull] string? pattern,
         Func<string, Exception>? exceptionCreator = null,
         [CallerArgumentExpression("value")] string? paramName = null)
     {
-        if (!EqualityComparer<T>.Default.Equals(value, targetValue))
+        if (value != null && pattern != null && Regex.IsMatch(value, pattern))
         {
             return value;
         }
@@ -40,7 +41,8 @@ public static partial class EnsureExtensions
         }
 
         throw new ArgumentException(
-            $"Value must not be equal to {targetValue}.",
-            paramName ?? nameof(value));
+            $"Value must match the regular expression pattern: '{pattern}'.",
+            paramName ?? nameof(value)
+        );
     }
 }

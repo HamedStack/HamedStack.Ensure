@@ -12,7 +12,7 @@ namespace HamedStack.Ensure;
 public static partial class EnsureExtensions
 {
     /// <summary>
-    /// Ensures that the value falls within the specified range inclusively or exclusively.
+    /// Ensures that the value does not fall within the specified range inclusively or exclusively.
     /// </summary>
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <param name="value">The value to check.</param>
@@ -20,13 +20,13 @@ public static partial class EnsureExtensions
     /// <param name="maxValue">The maximum allowed value.</param>
     /// <param name="minBoundary">The boundary type for the minimum value (inclusive/exclusive).</param>
     /// <param name="maxBoundary">The boundary type for the maximum value (inclusive/exclusive).</param>
-    /// <param name="exceptionCreator">A delegate that creates an exception if the value is outside the range.</param>
+    /// <param name="exceptionCreator">A delegate that creates an exception if the value is within the range.</param>
     /// <param name="paramName">The name of the parameter to include in the exception message.</param>
-    /// <returns>The original value if it falls within the specified range.</returns>
+    /// <returns>The original value if it does not fall within the specified range.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the value is outside the specified range.
+    /// Thrown when the value is within the specified range.
     /// </exception>
-    public static T EnsureBetween<T>(
+    public static T EnsureNotBetween<T>(
         [NotNull] this T value,
         [NotNull] T minValue,
         [NotNull] T maxValue,
@@ -43,7 +43,7 @@ public static partial class EnsureExtensions
             ? value.CompareTo(maxValue) >= 0
             : value.CompareTo(maxValue) > 0;
 
-        if (!isLessThanMin && !isGreaterThanMax) return value;
+        if (isLessThanMin || isGreaterThanMax) return value;
 
         var minBoundaryStr = minBoundary == BoundaryType.Exclusive ? "(" : "[";
         var maxBoundaryStr = maxBoundary == BoundaryType.Exclusive ? ")" : "]";
@@ -56,6 +56,6 @@ public static partial class EnsureExtensions
 
         throw new ArgumentOutOfRangeException(
             paramName ?? nameof(value),
-            $"Value must be in the range {minBoundaryStr}{minValue}, {maxValue}{maxBoundaryStr}.");
+            $"Value must not be in the range {minBoundaryStr}{minValue}, {maxValue}{maxBoundaryStr}.");
     }
 }

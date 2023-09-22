@@ -1,6 +1,7 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace HamedStack.Ensure;
@@ -23,8 +24,8 @@ public static partial class EnsureExtensions
     /// Thrown when the value is less than or equal to the specified minimum value.
     /// </exception>
     public static T EnsureGreaterThan<T>(
-        this T value,
-        T minValue,
+        [NotNull] this T value,
+        [NotNull] T minValue,
         Func<string, Exception>? exceptionCreator = null,
         [CallerArgumentExpression("value")] string? paramName = null) where T : IComparable<T>
     {
