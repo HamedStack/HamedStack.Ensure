@@ -16,6 +16,7 @@ public static partial class EnsureExtensions
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <param name="value">The value to check.</param>
     /// <param name="targetValue">The target value for comparison.</param>
+    /// <param name="exceptionCreator">A delegate that creates an exception if the value is not equal to the target value.</param>
     /// <param name="paramName">The name of the parameter to include in the exception message.</param>
     /// <returns>The original value if it is equal to the specified target value.</returns>
     /// <exception cref="ArgumentException">
@@ -24,6 +25,7 @@ public static partial class EnsureExtensions
     public static T EnsureEqual<T>(
         this T value,
         T targetValue,
+        Func<string, Exception>? exceptionCreator = null,
         [CallerArgumentExpression("value")] string? paramName = null)
     {
         if (EqualityComparer<T>.Default.Equals(value, targetValue))
@@ -31,34 +33,14 @@ public static partial class EnsureExtensions
             return value;
         }
 
+        var exception = exceptionCreator?.Invoke(paramName ?? nameof(value));
+        if (exception != null)
+        {
+            throw exception;
+        }
+        
         throw new ArgumentException(
             $"Value must be equal to {targetValue}.",
             paramName ?? nameof(value));
     } 
-    
-    /// <summary>
-    /// Ensures that the value is equal to the specified target value using a custom exception creator delegate.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to check.</typeparam>
-    /// <param name="value">The value to check.</param>
-    /// <param name="targetValue">The target value for comparison.</param>
-    /// <param name="exceptionCreator">A delegate that creates an exception if the value is not equal to the target value.</param>
-    /// <param name="paramName">The name of the parameter to include in the exception message.</param>
-    /// <returns>The original value if it is equal to the specified target value.</returns>
-    /// <exception cref="Exception">
-    /// Thrown when the value is not equal to the specified target value, as created by the <paramref name="exceptionCreator"/> delegate.
-    /// </exception>
-    public static T EnsureEqual<T>(
-        this T value,
-        T targetValue,
-        Func<string, Exception> exceptionCreator,
-        [CallerArgumentExpression("value")] string? paramName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(value, targetValue))
-        {
-            return value;
-        }
-
-        throw exceptionCreator(paramName ?? nameof(value));
-    }
 }
