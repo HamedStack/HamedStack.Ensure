@@ -1,8 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
 
-using System.Runtime.CompilerServices;
-
 namespace HamedStack.Ensure;
 
 /// <summary>
