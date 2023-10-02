@@ -1,17 +1,19 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
+// ReSharper disable InconsistentNaming
 
 using System.Diagnostics.CodeAnalysis;
+using HamedStack.Ensure.Enums;
 
 namespace HamedStack.Ensure;
 
 /// <summary>
-/// A set of extension methods for performing value validation and ensuring that values meet certain criteria.
+///     A set of extension methods for performing value validation and ensuring that values meet certain criteria.
 /// </summary>
 public static partial class EnsureExtensions
 {
     /// <summary>
-    /// Ensures that the value falls within the specified range inclusively or exclusively.
+    ///     Ensures that the value falls within the specified range inclusively or exclusively.
     /// </summary>
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <param name="value">The value to check.</param>
@@ -23,8 +25,9 @@ public static partial class EnsureExtensions
     /// <param name="paramName">The name of the parameter to include in the exception message.</param>
     /// <returns>The original value if it falls within the specified range.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the value is outside the specified range.
+    ///     Thrown when the value is outside the specified range.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T EnsureBetween<T>(
         [NotNull] this T value,
         [NotNull] T minValue,
@@ -48,10 +51,7 @@ public static partial class EnsureExtensions
         var maxBoundaryStr = maxBoundary == BoundaryType.Exclusive ? ")" : "]";
 
         var exception = exceptionCreator?.Invoke(paramName ?? nameof(value));
-        if (exception != null)
-        {
-            throw exception;
-        }
+        if (exception != null) throw exception;
 
         throw new ArgumentOutOfRangeException(
             paramName ?? nameof(value),

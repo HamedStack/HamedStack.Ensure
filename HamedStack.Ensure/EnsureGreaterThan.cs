@@ -1,17 +1,18 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
+// ReSharper disable InconsistentNaming
 
 using System.Diagnostics.CodeAnalysis;
 
 namespace HamedStack.Ensure;
 
 /// <summary>
-/// A set of extension methods for performing value validation and ensuring that values meet certain criteria.
+///     A set of extension methods for performing value validation and ensuring that values meet certain criteria.
 /// </summary>
 public static partial class EnsureExtensions
 {
     /// <summary>
-    /// Ensures that the value is greater than the specified minimum value.
+    ///     Ensures that the value is greater than the specified minimum value.
     /// </summary>
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <param name="value">The value to check.</param>
@@ -20,23 +21,18 @@ public static partial class EnsureExtensions
     /// <param name="paramName">The name of the parameter to include in the exception message.</param>
     /// <returns>The original value if it is greater than the specified minimum value.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the value is less than or equal to the specified minimum value.
+    ///     Thrown when the value is less than or equal to the specified minimum value.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T EnsureGreaterThan<T>(
         [NotNull] this T value,
         [NotNull] T minValue,
         Func<string, Exception>? exceptionCreator = null,
         [CallerArgumentExpression("value")] string? paramName = null) where T : IComparable<T>
     {
-        if (value.CompareTo(minValue) > 0)
-        {
-            return value;
-        }
+        if (value.CompareTo(minValue) > 0) return value;
         var exception = exceptionCreator?.Invoke(paramName ?? nameof(value));
-        if (exception != null)
-        {
-            throw exception;
-        }
+        if (exception != null) throw exception;
         throw new ArgumentOutOfRangeException(
             paramName ?? nameof(value),
             $"Value must be greater than {minValue}.");

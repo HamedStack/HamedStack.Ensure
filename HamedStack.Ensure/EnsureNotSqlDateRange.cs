@@ -1,12 +1,13 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
+// ReSharper disable InconsistentNaming
 
 namespace HamedStack.Ensure;
 
 public static partial class EnsureExtensions
 {
     /// <summary>
-    /// Ensures that the date does not fall within the specified SQL-style date range inclusively.
+    ///     Ensures that the date does not fall within the specified SQL-style date range inclusively.
     /// </summary>
     /// <typeparam name="T">The type of the date value.</typeparam>
     /// <param name="date">The date value to check.</param>
@@ -14,8 +15,9 @@ public static partial class EnsureExtensions
     /// <param name="exceptionCreator">A delegate that creates an exception if the date is within the range.</param>
     /// <returns>The original date value if it does not fall within the specified SQL-style date range.</returns>
     /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when the date value falls within the specified SQL-style date range.
+    ///     Thrown when the date value falls within the specified SQL-style date range.
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T EnsureNotSqlDateRange<T>(
         this T date,
         [CallerArgumentExpression("date")] string? paramName = null,
@@ -33,16 +35,10 @@ public static partial class EnsureExtensions
             _ => throw new ArgumentException("Unsupported date type.", paramName ?? nameof(date))
         };
 
-        if (dateTicks is < sqlMinDateTicks or > sqlMaxDateTicks)
-        {
-            return date;
-        }
+        if (dateTicks is < sqlMinDateTicks or > sqlMaxDateTicks) return date;
 
         var exception = exceptionCreator?.Invoke(paramName ?? nameof(date));
-        if (exception != null)
-        {
-            throw exception;
-        }
+        if (exception != null) throw exception;
 
         throw new ArgumentOutOfRangeException(
             paramName ?? nameof(date),

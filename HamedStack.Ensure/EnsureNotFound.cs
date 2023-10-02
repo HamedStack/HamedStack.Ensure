@@ -1,17 +1,18 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
+// ReSharper disable InconsistentNaming
 
 using HamedStack.Ensure.Exceptions;
 
 namespace HamedStack.Ensure;
 
 /// <summary>
-/// A set of extension methods for performing value validation and ensuring that values meet certain criteria.
+///     A set of extension methods for performing value validation and ensuring that values meet certain criteria.
 /// </summary>
 public static partial class EnsureExtensions
 {
     /// <summary>
-    /// Ensures that the value represents a "not found" state based on a custom condition.
+    ///     Ensures that the value represents a "not found" state based on a custom condition.
     /// </summary>
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <param name="value">The value to check for "not found" state.</param>
@@ -20,24 +21,19 @@ public static partial class EnsureExtensions
     /// <param name="exceptionCreator">A delegate that creates an exception if the value does not represent "not found."</param>
     /// <returns>The original value if it represents "not found."</returns>
     /// <exception cref="NotFoundException">
-    /// Thrown when the value does not represent "not found."
+    ///     Thrown when the value does not represent "not found."
     /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T EnsureNotFound<T>(
         this T value,
         Func<T, bool> notFoundCondition,
         [CallerArgumentExpression("value")] string? paramName = null,
         Func<string, Exception>? exceptionCreator = null)
     {
-        if (notFoundCondition(value))
-        {
-            return value;
-        }
+        if (notFoundCondition(value)) return value;
 
         var exception = exceptionCreator?.Invoke(paramName ?? nameof(value));
-        if (exception != null)
-        {
-            throw exception;
-        }
+        if (exception != null) throw exception;
 
         throw new NotFoundException(paramName ?? nameof(value), "Value must represent 'not found'.");
     }
